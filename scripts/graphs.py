@@ -1,13 +1,15 @@
+from collections import Counter
+import pandas as pd
+import json
+import math
+import matplotlib.pyplot as plt
+from matplotlib import colors
+
 def GenesAndCodons(aa_muts, nt_muts):
-
-    import json
-    import math
-    import pandas as pd
-
+    codons=[]
+    all_genes =[] 
     with open(aa_muts) as a_muts:
         with open(nt_muts) as n_muts:
-            codons=[]
-            all_genes =[] 
             dictofgenes=dict()
             aamuts = json.load(a_muts)
             ntmuts = json.load(n_muts)
@@ -40,55 +42,40 @@ def MutationsineachGene(aamutations, ntmutations):
 
     import pandas as pd
     genes =['F', 'G', 'M', 'M2', 'NS1', 'NS2', 'P', 'SH', 'N']
-    dictionary = dict()
-    dictionary1=dict()
-    df=(GenesAndCodons(aamutations, ntmutations))
-    for i in genes:
+    muts_in_genes = dict()
+    muts_in_genes_correct_index=dict()
+    df= GenesAndCodons(aamutations, ntmutations)
+    for gene in genes:
 
-        dictionary[i]= df.loc[df['Gene']==i]
+        muts_in_genes[gene]= df.loc[df['Gene']==gene]
 
-    for i,j in dictionary.items():
-
-        a =(j['Codon'].value_counts())
-        b = pd.DataFrame({'Codon':a.index, 'Frequency':a.values})
-
-    for i,j in dictionary.items():
-        j =j.reset_index(drop=True)
-        dictionary1[i]=j
-    return(dictionary1)
+    for gene, muts in muts_in_genes.items():
+        muts =muts.reset_index(drop=True)
+        muts_in_genes_correct_index[gene]=muts
+    return(muts_in_genes_correct_index)
 
 
 def AA_Mutations(aamutations, ntmutations):
     aa_m = dict()
-
     with open(aamutations) as f:
         with open(ntmutations) as g:
-
-            lis1 =[]
-            keys = ('F','G','M','M2','NS1','NS2','P','SH','N')
-            import json
+            genes = ('F','G','M','M2','NS1','NS2','P','SH','N')
             aamuts = json.load(f)
-            ntmuts = json.load(g)
-
-            for a in keys:
-
-                lis1=[]
-
+            for gene in genes:
+                mut_list=[]
                 for k, n in aamuts['nodes'].items():  
                             for i,j in n['aa_muts'].items():
-                                if j!=[] and i ==a: lis1.append(j)
-                flatlist =[item for sublist in lis1 for item in sublist]
-                #print(len(flatlist))
+                                if j!=[] and i ==gene:
+                                    mut_list.append(j)
+                flatlist =[item for sublist in mut_list for item in sublist]
                 flatlist = [int(i[1:-1]) for i in flatlist]
-                aa_m[a]=flatlist
+                aa_m[gene]=flatlist
     return(aa_m)
 
 
 def non_synonymous_or_synonymous(aa_muts, nt_muts):
-    aa = AA_Mutations(aa_muts, nt_muts)
-    mu = MutationsineachGene(aa_muts, nt_muts)
-    from collections import Counter
-    import pandas as pd
+    aa_mutations = AA_Mutations(aa_muts, nt_muts)
+    mutations_in_genes = MutationsineachGene(aa_muts, nt_muts)
     synonymousmutations =[]
     nonsynonymousmutations =[]
     ratios=[]
@@ -97,10 +84,9 @@ def non_synonymous_or_synonymous(aa_muts, nt_muts):
     for gene in listofgenes:
         list1 =[]
         list2 =[]
-        list3 =[]
-        for (k,l), (i,j) in zip(mu.items(), aa.items()):
+        for (k,l), (i,j) in zip(mutations_in_genes.items(), aa_mutations.items()):
             if k == gene and i == gene:
-                a =(list(l['Codon']))
+                a =list(l['Codon'])
                 c = Counter(a)
                 b = Counter(j)
                 d = c-b
@@ -126,11 +112,9 @@ def non_synonymous_or_synonymous(aa_muts, nt_muts):
 
 """ratio of nonsynonymous mutations in G to nonsynonymous in F is higher than synonymous G to synonymous F"""
 df1 = non_synonymous_or_synonymous('results/b/genome/aa_muts.json', 'results/b/genome/nt_muts.json')
-#print(df1['synonymous mutations'])
 
-import json
 with open('results/b/genome/aa_muts.json') as f:
-    list1=[]
+    gene_length=[]
     dictofgenes=dict()
     aamuts = json.load(f)
     keys = ('F','G','M','M2','NS1','NS2','P','SH','N')
@@ -142,15 +126,11 @@ with open('results/b/genome/aa_muts.json') as f:
                 g = list(range(node['start'],node['end']+1))
         dictofgenes[i]=g
     for (i, j) in dictofgenes.items():
-        print(len(j))
-        list1.append(len(j))
-    df1['length of gene'] =list1
+        gene_length.append(len(j))
+    df1['length of gene'] =gene_length
     df1['synonymous mutation/gene'] = df1['synonymous mutations']/df1['length of gene']
     df1['nonsynonymous mutation/gene']=df1['nonsynonymous mutations']/df1['length of gene']
-    print(df1)
 
-import matplotlib.pyplot as plt
-from matplotlib import colors
 #ax1 = df1.plot.scatter(x='length of gene',y='synonymous mutations', title="RSV-A Synonymous mutations")
 #fig = ax1.get_figure()
 
