@@ -9,11 +9,13 @@ rule graphs:
         aa = "data/{subtype}/aa_muts.json",
         nt = "data/{subtype}/nt_muts.json"
     output:
-        "results/{subtype}/synonymous.png"
+        graph = "results/{subtype}/synonymous.png",
+        table = "results/{subtype}/muts.csv"
     shell:
         """
         python3 scripts/graphs.py \
         --aa {input.aa} \
         --nt {input.nt} \
-        --output {output}
+        --output {output.graph} \
+        --table {output.table}
         """

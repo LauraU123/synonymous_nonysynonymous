@@ -2,8 +2,10 @@ from collections import Counter
 import pandas as pd
 import json
 import math
+import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import colors
+import argparse
 
 def GenesAndCodons(aa_muts, nt_muts):
     codons=[]
@@ -39,18 +41,15 @@ def GenesAndCodons(aa_muts, nt_muts):
         return(df)
     
 def MutationsineachGene(aamutations, ntmutations):
-
-    import pandas as pd
     genes =['F', 'G', 'M', 'M2', 'NS1', 'NS2', 'P', 'SH', 'N']
     muts_in_genes = dict()
     muts_in_genes_correct_index=dict()
     df= GenesAndCodons(aamutations, ntmutations)
     for gene in genes:
-
         muts_in_genes[gene]= df.loc[df['Gene']==gene]
 
     for gene, muts in muts_in_genes.items():
-        muts =muts.reset_index(drop=True)
+        muts = muts.reset_index(drop=True)
         muts_in_genes_correct_index[gene]=muts
     return(muts_in_genes_correct_index)
 
@@ -82,24 +81,24 @@ def non_synonymous_or_synonymous(aa_muts, nt_muts):
     sel =[]
     listofgenes =('F','G','M','M2','NS1','NS2','P','SH','N')
     for gene in listofgenes:
-        list1 =[]
-        list2 =[]
-        for (k,l), (i,j) in zip(mutations_in_genes.items(), aa_mutations.items()):
-            if k == gene and i == gene:
-                a =list(l['Codon'])
-                c = Counter(a)
-                b = Counter(j)
-                d = c-b
+        all_nonsyn_muts =[]
+        all_syn_muts =[]
+        for (gene_,mutation), (gene__,aa_mut) in zip(mutations_in_genes.items(), aa_mutations.items()):
+            if gene_ == gene and gene__ == gene:
+                a =list(mutation['Codon'])
+                all_muts = Counter(a)
+                amino_acid_muts = Counter(aa_mut)
+                synonymous_muts = all_muts-amino_acid_muts
                 
 
-        for i, j in b.items():
-            list1.append(j)
-        nonsynonymousmutations.append(sum(list1))
-        for k, l in d.items():
-            list2.append(l)
-        synonymousmutations.append(sum(list2))
+        for genes, j in amino_acid_muts.items():
+            all_nonsyn_muts.append(j)
+        nonsynonymousmutations.append(sum(all_nonsyn_muts))
+        for k, l in synonymous_muts.items():
+            all_syn_muts.append(l)
+        synonymousmutations.append(sum(all_syn_muts))
         for a, b in zip(nonsynonymousmutations, synonymousmutations):
-            ratio = a/b
+            ratio = a/b #ratio of nonsynonymous to synonymous mutations
             if ratio>1:selection =('adaptive')
             elif ratio<1: selection = ('purifying')
             elif ratio ==1: selection =('neutral')
@@ -109,45 +108,61 @@ def non_synonymous_or_synonymous(aa_muts, nt_muts):
     df = pd.DataFrame({"gene":listofgenes, "synonymous mutations": synonymousmutations, "nonsynonymous mutations":nonsynonymousmutations, "dN/dS ratio":ratios, "selection":sel })
     return(df)
 
+if __name__=="__main__":
+    parser = argparse.ArgumentParser(
+        description="analyse synonymous and nonsynonymous",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    
+    parser.add_argument('--aa', required=True, type=str, help="aa json file")
+    parser.add_argument('--nt', type=str, help="nt json file")
+    parser.add_argument('--output', type=str,  help="output graph png")
+    parser.add_argument('--table', type=str,  help="output table csv")
+    args = parser.parse_args()
 
-"""ratio of nonsynonymous mutations in G to nonsynonymous in F is higher than synonymous G to synonymous F"""
-df1 = non_synonymous_or_synonymous('results/b/genome/aa_muts.json', 'results/b/genome/nt_muts.json')
+    """ratio of nonsynonymous mutations in G to nonsynonymous in F is higher than synonymous G to synonymous F"""
+    df1 = non_synonymous_or_synonymous(args.aa, args.nt)
 
-with open('results/b/genome/aa_muts.json') as f:
-    gene_length=[]
-    dictofgenes=dict()
-    aamuts = json.load(f)
-    keys = ('F','G','M','M2','NS1','NS2','P','SH','N')
+    with open(args.aa) as f:
+        gene_length=[]
+        dictofgenes=dict()
+        aamuts = json.load(f)
+        keys = ('F','G','M','M2','NS1','NS2','P','SH','N')
 
-    for i in keys:
-        for key, node in aamuts['annotations'].items():
-            if key == i:
-                g=[]
-                g = list(range(node['start'],node['end']+1))
-        dictofgenes[i]=g
-    for (i, j) in dictofgenes.items():
-        gene_length.append(len(j))
-    df1['length of gene'] =gene_length
-    df1['synonymous mutation/gene'] = df1['synonymous mutations']/df1['length of gene']
-    df1['nonsynonymous mutation/gene']=df1['nonsynonymous mutations']/df1['length of gene']
+        for gene in keys:
+            for key, node in aamuts['annotations'].items():
+                if key == gene:
+                    loc_list=[]
+                    loc_list = list(range(node['start'],node['end']+1))
+            dictofgenes[gene]=loc_list
+        for gene, loc in dictofgenes.items():
+            gene_length.append(len(loc))
+        df1['length of gene'] =gene_length
+        df1['synonymous mutation/gene'] = df1['synonymous mutations']/df1['length of gene']
+        df1['nonsynonymous mutation/gene']=df1['nonsynonymous mutations']/df1['length of gene']
 
-#ax1 = df1.plot.scatter(x='length of gene',y='synonymous mutations', title="RSV-A Synonymous mutations")
-#fig = ax1.get_figure()
+    #ax1 = df1.plot.scatter(x='length of gene',y='synonymous mutations', title="RSV-A Synonymous mutations")
+    #fig = ax1.get_figure()
 
-#for label, c in zip(df1['gene'], colorlist):
-    #df1.plot.scatter(x='length of gene',y='synonymous mutations', ax=ax, s=50, linewidth=0.1, label=label, color=c)
-#fig.savefig("synonymous mutations RSV-A.png")
+    #for label, c in zip(df1['gene'], colorlist):
+        #df1.plot.scatter(x='length of gene',y='synonymous mutations', ax=ax, s=50, linewidth=0.1, label=label, color=c)
+    #fig.savefig("synonymous mutations RSV-A.png")
 
 
-plt.figure(figsize=(8,6))
-sp_names = df1['gene'].to_list()
+    plt.figure(figsize=(8,6))
+    sp_names = df1['gene'].to_list()
+    print(sp_names)
+    colors_ = np.array(["green","blue","yellow","pink","black","orange","gray","cyan","magenta"])
+    scatter = plt.scatter(df1['length of gene'], 
+                df1['synonymous mutations'],
+                s=150, c=colors_)
 
-scatter = plt.scatter(df1['length of gene'], 
-            df1['synonymous mutations'],
-            s=150)
-plt.xlabel("Gene Length", size=20)
-plt.ylabel("synonymous mutations", size=20)
-# add legend to the plot with names
-plt.legend(handles=scatter.legend_elements()[0], 
-           labels=sp_names,
-           title="gene")
+    plt.xlabel("Gene Length", size=20)
+    plt.ylabel("synonymous mutations", size=20)
+    plt.legend(handles=scatter.legend_elements()[0], 
+            labels=sp_names,
+            title="gene")
+    plt.savefig(args.output)
+
+
+    csv_file = non_synonymous_or_synonymous(args.aa, args.nt)
+    csv_file.to_csv(args.table)
