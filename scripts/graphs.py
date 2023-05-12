@@ -140,29 +140,21 @@ if __name__=="__main__":
         df1['synonymous mutation/gene'] = df1['synonymous mutations']/df1['length of gene']
         df1['nonsynonymous mutation/gene']=df1['nonsynonymous mutations']/df1['length of gene']
 
-    #ax1 = df1.plot.scatter(x='length of gene',y='synonymous mutations', title="RSV-A Synonymous mutations")
-    #fig = ax1.get_figure()
-
-    #for label, c in zip(df1['gene'], colorlist):
-        #df1.plot.scatter(x='length of gene',y='synonymous mutations', ax=ax, s=50, linewidth=0.1, label=label, color=c)
-    #fig.savefig("synonymous mutations RSV-A.png")
-
-
     plt.figure(figsize=(8,6))
-    sp_names = df1['gene'].to_list()
-    print(sp_names)
+    gene_names = df1['gene'].to_list()
+    gene_name = df1['gene']
     colors_ = np.array(["green","blue","yellow","pink","black","orange","gray","cyan","magenta"])
     scatter = plt.scatter(df1['length of gene'], 
                 df1['synonymous mutations'],
                 s=150, c=colors_)
-
+    for i in range(0, len(df1['length of gene'])):
+        plt.text(df1['length of gene'][i] - 5, df1['synonymous mutations'][i], f'{gene_name[i]}')
     plt.xlabel("Gene Length", size=20)
     plt.ylabel("synonymous mutations", size=20)
     plt.legend(handles=scatter.legend_elements()[0], 
-            labels=sp_names,
+            labels=gene_names,
             title="gene")
     plt.savefig(args.output)
-
 
     csv_file = non_synonymous_or_synonymous(args.aa, args.nt)
     csv_file.to_csv(args.table)
