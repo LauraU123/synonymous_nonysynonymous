@@ -10,6 +10,7 @@ rule graphs:
         nt = "data/{subtype}/nt_muts.json"
     output:
         graph = "results/{subtype}/synonymous.png",
+        graphnonsyn = "results/{subtype}/nonsynonymous.png",
         table = "results/{subtype}/muts.csv"
     shell:
         """
@@ -17,5 +18,6 @@ rule graphs:
         --aa {input.aa} \
         --nt {input.nt} \
         --output {output.graph} \
+        --outputnonsyn {output.graphnonsyn} \
         --table {output.table}
         """

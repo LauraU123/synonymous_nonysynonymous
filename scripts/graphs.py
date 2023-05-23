@@ -116,6 +116,7 @@ if __name__=="__main__":
     parser.add_argument('--aa', required=True, type=str, help="aa json file")
     parser.add_argument('--nt', type=str, help="nt json file")
     parser.add_argument('--output', type=str,  help="output graph png")
+    parser.add_argument('--outputnonsyn', type=str, help="output file for nonsynonymous mutations")
     parser.add_argument('--table', type=str,  help="output table csv")
     args = parser.parse_args()
 
@@ -148,13 +149,29 @@ if __name__=="__main__":
                 df1['synonymous mutations'],
                 s=150, c=colors_)
     for i in range(0, len(df1['length of gene'])):
-        plt.text(df1['length of gene'][i] - 5, df1['synonymous mutations'][i], f'{gene_name[i]}')
+        plt.text(df1['length of gene'][i] - 10, df1['synonymous mutations'][i], f'{gene_name[i]}')
     plt.xlabel("Gene Length", size=20)
     plt.ylabel("synonymous mutations", size=20)
     plt.legend(handles=scatter.legend_elements()[0], 
             labels=gene_names,
             title="gene")
+    plt.title("Number of Synonymous Mutations in Each Gene")
     plt.savefig(args.output)
 
     csv_file = non_synonymous_or_synonymous(args.aa, args.nt)
     csv_file.to_csv(args.table)
+
+    plt.figure(figsize=(8,6))
+    scatter_1 = plt.scatter(df1['length of gene'], 
+                df1['nonsynonymous mutations'],
+                s=150, c=colors_)
+    for i in range(0, len(df1['length of gene'])):
+        plt.text(df1['length of gene'][i] - 10, df1['nonsynonymous mutations'][i], f'{gene_name[i]}')
+    plt.xlabel("Gene Length", size=20)
+    plt.ylabel("nonsynonymous mutations", size=20)
+    plt.legend(handles=scatter_1.legend_elements()[0], 
+            labels=gene_names,
+            title="gene")
+    plt.title("Number of Nonsynonymous Mutations in Each Gene")
+    plt.savefig(args.outputnonsyn)
+    
