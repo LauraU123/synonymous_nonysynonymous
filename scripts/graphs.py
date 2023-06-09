@@ -146,12 +146,12 @@ if __name__=="__main__":
     gene_name = df1['gene']
     colors_ = np.array(["green","blue","yellow","pink","black","orange","gray","cyan","magenta"])
     scatter = plt.scatter(df1['length of gene'], 
-                df1['synonymous mutations'],
+                df1['synonymous mutation/gene'],
                 s=150, c=colors_)
     for i in range(0, len(df1['length of gene'])):
-        plt.text(df1['length of gene'][i] - 10, df1['synonymous mutations'][i], f'{gene_name[i]}')
+        plt.text(df1['length of gene'][i] - 10, df1['synonymous mutation/gene'][i], f'{gene_name[i]}')
     plt.xlabel("Gene Length", size=20)
-    plt.ylabel("synonymous mutations", size=20)
+    plt.ylabel("synonymous mutation rate", size=20)
     plt.legend(handles=scatter.legend_elements()[0], 
             labels=gene_names,
             title="gene")
@@ -163,12 +163,12 @@ if __name__=="__main__":
 
     plt.figure(figsize=(8,6))
     scatter_1 = plt.scatter(df1['length of gene'], 
-                df1['nonsynonymous mutations'],
+                df1['nonsynonymous mutation/gene'],
                 s=150, c=colors_)
     for i in range(0, len(df1['length of gene'])):
-        plt.text(df1['length of gene'][i] - 10, df1['nonsynonymous mutations'][i], f'{gene_name[i]}')
+        plt.text(df1['length of gene'][i] - 10, df1['nonsynonymous mutation/gene'][i], f'{gene_name[i]}')
     plt.xlabel("Gene Length", size=20)
-    plt.ylabel("nonsynonymous mutations", size=20)
+    plt.ylabel("nonsynonymous mutation rate", size=20)
     plt.legend(handles=scatter_1.legend_elements()[0], 
             labels=gene_names,
             title="gene")
