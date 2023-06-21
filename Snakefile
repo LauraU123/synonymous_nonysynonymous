@@ -7,7 +7,8 @@ rule all:
 rule graphs:
     input:
         aa = "data/{subtype}/aa_muts.json",
-        nt = "data/{subtype}/nt_muts.json"
+        nt = "data/{subtype}/nt_muts.json",
+        tree = "data/{subtype}/tree.nwk"
     output:
         graph = "results/{subtype}/synonymous.png",
         graphnonsyn = "results/{subtype}/nonsynonymous.png",
@@ -19,5 +20,6 @@ rule graphs:
         --nt {input.nt} \
         --output {output.graph} \
         --outputnonsyn {output.graphnonsyn} \
-        --table {output.table}
+        --table {output.table} \
+        --tree {input.tree}
         """
