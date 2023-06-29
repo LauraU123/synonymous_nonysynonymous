@@ -145,8 +145,8 @@ if __name__=="__main__":
         for gene, loc in dictofgenes.items():
             gene_length.append(len(loc))
         df1['length of gene'] =gene_length
-        df1['synonymous mutation/gene'] = (df1['synonymous mutations']/df1['length of gene'])/total_len
-        df1['nonsynonymous mutation/gene']=(df1['nonsynonymous mutations']/df1['length of gene'])/total_len
+        df1['synonymous mutation/gene'] = ((df1['synonymous mutations']/df1['length of gene'])/total_len)*3   #multiplied by 3 because every 3rd is an option
+        df1['nonsynonymous mutation/gene']=((df1['nonsynonymous mutations']/df1['length of gene'])/total_len) *(3/2) #multiplied by 2/3 as 1 and 2 are an option
 
     plt.figure(figsize=(8,6))
     gene_names = df1['gene'].to_list()
