@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import colors
 import argparse
+from Bio import Phylo
 
 def GenesAndCodons(aa_muts, nt_muts):
     codons=[]
@@ -118,10 +119,16 @@ if __name__=="__main__":
     parser.add_argument('--output', type=str,  help="output graph png")
     parser.add_argument('--outputnonsyn', type=str, help="output file for nonsynonymous mutations")
     parser.add_argument('--table', type=str,  help="output table csv")
+    parser.add_argument('--tree', type=str,  help="input tree nwk")
     args = parser.parse_args()
 
     """ratio of nonsynonymous mutations in G to nonsynonymous in F is higher than synonymous G to synonymous F"""
     df1 = non_synonymous_or_synonymous(args.aa, args.nt)
+
+    tree_file  = Phylo.read(args.tree, "newick")
+    tree_file.root_at_midpoint()
+    tree_file.find_clades()
+    total_len = tree_file.total_branch_length()
 
     with open(args.aa) as f:
         gene_length=[]
@@ -138,8 +145,8 @@ if __name__=="__main__":
         for gene, loc in dictofgenes.items():
             gene_length.append(len(loc))
         df1['length of gene'] =gene_length
-        df1['synonymous mutation/gene'] = df1['synonymous mutations']/df1['length of gene']
-        df1['nonsynonymous mutation/gene']=df1['nonsynonymous mutations']/df1['length of gene']
+        df1['synonymous mutation/gene'] = ((df1['synonymous mutations']/df1['length of gene'])/total_len)*3   #multiplied by 3 because every 3rd is an option
+        df1['nonsynonymous mutation/gene']=((df1['nonsynonymous mutations']/df1['length of gene'])/total_len) *(3/2) #multiplied by 2/3 as 1 and 2 are an option
 
     plt.figure(figsize=(8,6))
     gene_names = df1['gene'].to_list()
