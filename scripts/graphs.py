@@ -117,8 +117,7 @@ def non_synonymous_or_synonymous(reffile, aa_muts, nt_muts):
         for k, l in synonymous_muts.items(): all_syn_muts.append(l)
         synonymousmutations.append(sum(all_syn_muts))
         for a, b in zip(nonsynonymousmutations, synonymousmutations):
-            
-            ratio = (a*non_ratio)/(b*syn_ratio) #ratio of nonsynonymous to synonymous mutations
+            ratio = (a/non_ratio)/(b/syn_ratio) #ratio of nonsynonymous to synonymous mutations
             if ratio>1:selection =('adaptive')
             elif ratio<1: selection = ('purifying')
             elif ratio ==1: selection =('neutral')
@@ -143,6 +142,7 @@ if __name__=="__main__":
 
     """ratio of nonsynonymous mutations in G to nonsynonymous in F is higher than synonymous G to synonymous F"""
     df1 = non_synonymous_or_synonymous(args.ref, args.aa, args.nt)
+    df1.to_csv(args.table)
     ratio_nonsyn = scaled_mutations(args.ref)[0]
     ratio_syn = scaled_mutations(args.ref)[1]
 
@@ -183,7 +183,6 @@ if __name__=="__main__":
     plt.savefig(args.output)
 
     #csv_file = non_synonymous_or_synonymous(args.aa, args.nt)
-    df1.to_csv(args.table)
 
     plt.figure(figsize=(8,6))
     scatter_1 = plt.scatter(df1['length of gene'], 
