@@ -214,9 +214,9 @@ if __name__=="__main__":
         N_term = [*range(1,36)]
         T_Membrane = [*range(36,67)]
         Mucinlike_I = [*range(67,164)]
-        Centralconserved = [*range(164,186)] 
-        Heparin_binding = [*range(186,224)]
-        Mucinlike_II = [*range(224, G_gene_length+1)]
+        Centralconserved = [*range(164,185)] 
+        Heparin_binding = [*range(185,198)]
+        Mucinlike_II = [*range(198, G_gene_length+1)]
         
         dictofdomains = {'N-terminal':N_term,'Transmembrane':T_Membrane,'Mucin-like I':Mucinlike_I,'Central conserved domain':Centralconserved,'Heparin-binding domain':Heparin_binding,'Mucin-like II': Mucinlike_II}
         dictionary_synonymous, dictionary_nonsynonymous = (defaultdict(list) for i in range(2))
