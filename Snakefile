@@ -12,14 +12,16 @@ rule graphs:
     output:
         graph = "results/{subtype}/synonymous.png",
         graphnonsyn = "results/{subtype}/nonsynonymous.png",
-        table = "results/{subtype}/muts.csv"
+        table = "results/{subtype}/muts.csv",
+        G = "results/{subtype}/G_muts.csv"
     shell:
         """
-        python3 scripts/graphs.py \
+        python3 scripts/graphs_with_G.py \
         --aa {input.aa} \
         --nt {input.nt} \
         --output {output.graph} \
         --outputnonsyn {output.graphnonsyn} \
         --table {output.table} \
-        --ref {input.ref}
+        --ref {input.ref} \
+        --G_table {output.G}
         """
