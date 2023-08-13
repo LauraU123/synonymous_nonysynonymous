@@ -181,11 +181,10 @@ if __name__=="__main__":
                 df1['synonymous mutation/gene'], 'o', markersize=10)
     for i in range(0, len(df1['length of gene'])):
         plt.text(df1['length of gene'][i] - 12, df1['synonymous mutation/gene'][i], f'{gene_name[i]}')
-    plt.xlabel("Gene Length", size=10)
-    plt.xticks(size=15)
-    plt.yticks(size=15)
-    plt.ylabel("synonymous mutation rate per codon", size=10)
-    plt.title("Synonymous Mutations in Each Gene")
+    plt.xlabel("Gene Length", size=14)
+    plt.xticks(size=14)
+    plt.yticks(size=14)
+    plt.ylabel("synonymous mutation rate per codon", size=14)
     plt.savefig(args.output)
 
     plt.figure(figsize=(8,6))
@@ -194,11 +193,10 @@ if __name__=="__main__":
                 'o', markersize=10)
     for i in range(0, len(df1['length of gene'])):
         plt.text(df1['length of gene'][i] - 12, df1['nonsynonymous mutation/gene'][i], f'{gene_name[i]}')
-    plt.xlabel("Gene Length", size=10)
-    plt.ylabel("nonsynonymous mutation rate per codon", size=10)
-    plt.xticks(size=15)
-    plt.yticks(size=15)
-    plt.title("Nonsynonymous Mutations in Each Gene")
+    plt.xlabel("Gene Length", size=14)
+    plt.ylabel("nonsynonymous mutation rate per codon", size=14)
+    plt.xticks(size=14)
+    plt.yticks(size=14)
     plt.savefig(args.outputnonsyn)
 
     mylist=[]
