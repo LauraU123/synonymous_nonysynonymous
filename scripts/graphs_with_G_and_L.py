@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 from Bio import SeqIO, Phylo
 
 
-
 def GenesAndCodons(aa_muts, nt_muts):
     codons, all_genes= ([] for i in range(2))
     with open(aa_muts) as a_muts:
@@ -181,10 +180,10 @@ if __name__=="__main__":
                 df1['synonymous mutation/gene'], 'o', markersize=10)
     for i in range(0, len(df1['length of gene'])):
         plt.text(df1['length of gene'][i] - 12, df1['synonymous mutation/gene'][i], f'{gene_name[i]}')
-    plt.xlabel("Gene Length", size=14)
+    plt.xlabel("Gene", size=14)
     plt.xticks(size=14)
     plt.yticks(size=14)
-    plt.ylabel("synonymous mutation rate per codon", size=14)
+    plt.ylabel("synonymous mutations per codon", size=14)
     plt.savefig(args.output)
 
     plt.figure(figsize=(8,6))
@@ -193,8 +192,8 @@ if __name__=="__main__":
                 'o', markersize=10)
     for i in range(0, len(df1['length of gene'])):
         plt.text(df1['length of gene'][i] - 12, df1['nonsynonymous mutation/gene'][i], f'{gene_name[i]}')
-    plt.xlabel("Gene Length", size=14)
-    plt.ylabel("nonsynonymous mutation rate per codon", size=14)
+    plt.xlabel("Gene", size=14)
+    plt.ylabel("nonsynonymous mutations per codon", size=14)
     plt.xticks(size=14)
     plt.yticks(size=14)
     plt.savefig(args.outputnonsyn)
