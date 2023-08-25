@@ -175,9 +175,10 @@ if __name__=="__main__":
     plt.figure(figsize=(8,6))
     gene_names = df1['gene'].to_list()
     gene_name = df1['gene']
-    colors_ = np.array(["palegreen","violet","yellow","pink","lightskyblue","orange","gray","cyan","bisque", "skyblue"])
     scatter = plt.plot(df1['gene'], 
                 df1['synonymous mutation/gene'], 'o', markersize=10)
+    plt.ylim(ymin=0)
+    plt.axhline(y=np.nanmean(df1['synonymous mutation/gene']), color="red")
     for i in range(0, len(df1['length of gene'])):
         plt.text(df1['length of gene'][i] - 12, df1['synonymous mutation/gene'][i], f'{gene_name[i]}')
     plt.xlabel("Gene", size=14)
@@ -190,6 +191,8 @@ if __name__=="__main__":
     scatter_1 = plt.plot(df1['gene'], 
                 df1['nonsynonymous mutation/gene'],
                 'o', markersize=10)
+    plt.axhline(y=np.nanmean(df1['nonsynonymous mutation/gene']), color="red")
+    plt.ylim(ymin=0)
     for i in range(0, len(df1['length of gene'])):
         plt.text(df1['length of gene'][i] - 12, df1['nonsynonymous mutation/gene'][i], f'{gene_name[i]}')
     plt.xlabel("Gene", size=14)
